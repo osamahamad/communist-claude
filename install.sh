@@ -63,18 +63,10 @@ sudo chmod +x /usr/local/bin/communist-claude
 
 cd ..
 
-# 4. Automatically install the claude-mem plugin (Headless Manual Install)
-echo -e "${YELLOW}[*] Installing the claude-mem plugin to solve the 167k token context drain...${RESET}"
-mkdir -p ~/.claude/plugins/marketplaces/thedotmack
-if [ ! -d "$HOME/.claude/plugins/marketplaces/thedotmack/.git" ]; then
-    git clone https://github.com/thedotmack/claude-mem.git ~/.claude/plugins/marketplaces/thedotmack
-else
-    cd ~/.claude/plugins/marketplaces/thedotmack && git pull && cd - > /dev/null
-fi
-cd ~/.claude/plugins/marketplaces/thedotmack
-npm install > /dev/null 2>&1
-npm run build > /dev/null 2>&1
-cd - > /dev/null
+# 4. Automatically install the claude-mem plugin (Headless Native Install)
+echo -e "${YELLOW}[*] Installing the claude-mem plugin natively to solve the 167k token context drain...${RESET}"
+/usr/local/bin/communist-claude plugin marketplace add thedotmack/claude-mem || true
+/usr/local/bin/communist-claude plugin install claude-mem || true
 
 echo -e "\n${GREEN}[+] Installation Complete!${RESET}"
 echo -e "You can now run your fully unlocked agent from ANY directory using:"
