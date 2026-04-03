@@ -39,9 +39,21 @@ INSTALL_DIR="$(pwd)"
 sudo bash -c "cat << 'EOF' > /usr/local/bin/communist-claude
 #!/bin/bash
 if [ \"\$1\" == \"--minimax\" ]; then
-    echo \"[*] Launching Communist Claude in GOD MODE (MiniMax M2.7)...\"
-    export ANTHROPIC_API_KEY=\"\${MINIMAX_API_KEY:-sk-dummy-key}\"
-    export ANTHROPIC_BASE_URL=\"https://api.minimax.chat/v1\"
+    echo -e \"\033[1;33m☭ Routing to MiniMax API (95% cheaper, Opus-level performance)...\033[0m\"
+    export ANTHROPIC_BASE_URL=\"https://api.minimax.io/anthropic\"
+    
+    if [ -z \"\$MINIMAX_API_KEY\" ]; then
+        echo -e \"\033[0;31mWarning: MINIMAX_API_KEY is not set.\033[0m\"
+        export ANTHROPIC_API_KEY=\"sk-your-minimax-api-key\"
+    else
+        export ANTHROPIC_API_KEY=\"\$MINIMAX_API_KEY\"
+    fi
+
+    export ANTHROPIC_MODEL=\"MiniMax-M2.7\"
+    export ANTHROPIC_DEFAULT_OPUS_MODEL=\"MiniMax-M2.7\"
+    export ANTHROPIC_DEFAULT_SONNET_MODEL=\"MiniMax-M2.7\"
+    export ANTHROPIC_DEFAULT_HAIKU_MODEL=\"MiniMax-M2.7\"
+    shift
     exec \"${INSTALL_DIR}/cli-dev\" \"\$@\"
 else
     exec \"${INSTALL_DIR}/cli-dev\" \"\$@\"
