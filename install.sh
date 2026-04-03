@@ -6,9 +6,6 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RESET='\033[0m'
 
-# Pinned commit for paoloanzn/free-code to ensure stability
-FREE_CODE_COMMIT="7dc15d6c8fb0c40c7fcc02ce9b58204324252632"
-
 echo -e "${RED}☭ Welcome to Communist Claude Installer ☭${RESET}"
 echo -e "Seizing the means of code generation...\n"
 
@@ -23,20 +20,10 @@ else
   bun upgrade
 fi
 
-# 2. Clone free-code and pin to a stable commit
+# 2. Verify bundled source code exists
 if [ ! -d "free-code-source" ]; then
-  echo -e "${YELLOW}[*] Cloning the paoloanzn/free-code repository...${RESET}"
-  git clone https://github.com/paoloanzn/free-code.git free-code-source
-  cd free-code-source
-  echo -e "${YELLOW}[*] Pinning free-code to stable commit: ${FREE_CODE_COMMIT:0:7}...${RESET}"
-  git checkout "$FREE_CODE_COMMIT" -q
-  cd ..
-else
-  echo -e "${YELLOW}[*] free-code-source already exists. Resetting to pinned stable commit...${RESET}"
-  cd free-code-source 
-  git fetch origin
-  git checkout "$FREE_CODE_COMMIT" -q
-  cd ..
+  echo -e "${RED}[!] Error: free-code-source directory not found! Make sure you cloned the entire communist-claude repository properly.${RESET}"
+  exit 1
 fi
 
 # 3. Build the unlocked binary
@@ -44,6 +31,24 @@ echo -e "${YELLOW}[*] Building the unlocked binary with all 54 experimental flag
 cd free-code-source
 bun install
 bun run build:dev:full
+
+# Move the built binary to the global path
+echo -e "${YELLOW}[*] Installing communist-claude globally (may require sudo password)...${RESET}"
+INSTALL_DIR="$(pwd)"
+
+sudo bash -c "cat << 'EOF' > /usr/local/bin/communist-claude
+#!/bin/bash
+if [ \"\$1\" == \"--minimax\" ]; then
+    echo \"[*] Launching Communist Claude in GOD MODE (MiniMax M2.7)...\"
+    export ANTHROPIC_API_KEY=\"\${MINIMAX_API_KEY:-sk-dummy-key}\"
+    export ANTHROPIC_BASE_URL=\"https://api.minimax.chat/v1\"
+    exec \"${INSTALL_DIR}/cli-dev\" \"\$@\"
+else
+    exec \"${INSTALL_DIR}/cli-dev\" \"\$@\"
+fi
+EOF"
+sudo chmod +x /usr/local/bin/communist-claude
+
 cd ..
 
 # 4. Automatically install the claude-mem plugin (Headless Manual Install)
@@ -60,7 +65,7 @@ npm run build > /dev/null 2>&1
 cd - > /dev/null
 
 echo -e "\n${GREEN}[+] Installation Complete!${RESET}"
-echo -e "You can now run your fully unlocked agent using:"
-echo -e "  ${GREEN}./bin/communist-claude${RESET} (Normal Anthropic API)"
-echo -e "  ${GREEN}./bin/communist-claude --minimax${RESET} (95% Cheaper MiniMax API)\n"
+echo -e "You can now run your fully unlocked agent from ANY directory using:"
+echo -e "  ${GREEN}communist-claude${RESET} (Normal Anthropic API)"
+echo -e "  ${GREEN}communist-claude --minimax${RESET} (95% Cheaper MiniMax API)\n"
 echo -e "Don't forget to run ${YELLOW}cp CLAUDE.md.template CLAUDE.md${RESET} in your target project directory!"

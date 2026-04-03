@@ -28,7 +28,7 @@ Instead of juggling multiple forks, plugins, and custom prompt wrappers, this re
 Communist Claude automates a multi-step installation pipeline to build the perfect agent:
 
 1. **Strips Telemetry, Guardrails & Unlocks 54 Experimental Features** 
-   * **How:** It clones and builds `paoloanzn/free-code` under the hood. *Note: We intentionally compile as `USER_TYPE='external'` instead of `'ant'`. Compiling as `'ant'` crashes the application as it tries to ping internal Anthropic corporate VPNs and telemetry endpoints. We bypass the guardrails safely using the CLAUDE.md override instead.*
+   * **How:** It builds the bundled version of `paoloanzn/free-code` under the hood. *Note: We intentionally compile as `USER_TYPE='external'` instead of `'ant'`. Compiling as `'ant'` crashes the application as it tries to ping internal Anthropic corporate VPNs and telemetry endpoints. We bypass the guardrails safely using the CLAUDE.md override instead.*
    * **Fixes:** Removes Sentry crash reports, GrowthBook event logging, and completely strips Anthropic's security-prompt guardrails (e.g., injected "cyber risk" blocks and forced refusal patterns) at the source-code level. Unlocks Voice Mode, IDE Bridge, and the internal Agent Swarm orchestrator.
 
 2. **Cures The Context Death Spiral (95% Token Savings)**
@@ -52,19 +52,16 @@ Communist Claude automates a multi-step installation pipeline to build the perfe
 * `git`, `curl`, and `bun` (v1.3.11+ required - the installer will auto-upgrade Bun if needed)
 
 ### 1. Clone & Install
-Run the automated installation script. This will clone the upstream repositories, compile the unlocked binary, and configure the vector-memory plugins.
+Run the automated installation script. This will build the bundled unlocked binary and configure the vector-memory plugins. It will also automatically install the binary to your global path (`/usr/local/bin`).
 
 ```bash
-git clone https://github.com/yourusername/communist-claude.git
+git clone https://github.com/osamahamad/communist-claude.git
 cd communist-claude
 ./install.sh
 ```
 
-### 2. Add to your PATH (Optional)
-To make the custom wrapper accessible anywhere:
-```bash
-sudo ln -s $(pwd)/bin/communist-claude /usr/local/bin/communist-claude
-```
+### 2. Run the Agent
+You can now run the agent from **ANY** directory on your machine:
 
 ---
 
@@ -73,7 +70,7 @@ sudo ln -s $(pwd)/bin/communist-claude /usr/local/bin/communist-claude
 If you're curious about exactly what the `install.sh` script executes, here is the step-by-step technical breakdown:
 
 1. **Runtime Preparation:** Checks for the `bun` runtime. If missing, it installs it via the official bash script. If present, it forcefully runs `bun upgrade` to ensure you are on the latest version (the `free-code` codebase requires bleeding-edge Bun features to compile).
-2. **Source Acquisition (Pinned for Stability):** Clones the `paoloanzn/free-code` repository (the core telemetry-stripped, guardrail-free fork). It forcefully checks out a specific, tested commit SHA to guarantee that upstream changes won't break your installation in the future.
+2. **Source Acquisition (Pinned for Stability):** Uses the bundled telemetry-stripped, guardrail-free source code (originally from `paoloanzn/free-code`). We bundle it directly within this repository to prevent upstream GitHub bans from breaking your installation.
 3. **Compiler Integration:** The `free-code` fork natively sets `USER_TYPE='external'` by default to disable internal Anthropic telemetry and corporate SSO checks. We rely on that native configuration and use the `CLAUDE.md` to emulate the employee-grade prompt rules instead, ensuring maximum stability without modifying upstream compiler logic.
 4. **Unlocked Compilation:** Runs `bun install` and compiles the CLI using `bun run build:dev:full`. This specific build target forces all 54 experimental `bun:bundle` feature flags (like `ULTRAPLAN`, `VOICE_MODE`, and `AGENT_TRIGGERS`) to evaluate to `true` at compile time, completely unlocking the binary without requiring any source code modifications to the tools themselves.
 5. **Headless Plugin Injection (`claude-mem`):** Bypasses the standard interactive `/plugin install` command (which fails in automated or headless shell environments due to `/dev/tty` requirements). It manually scaffolds the `~/.claude/plugins/marketplaces/thedotmack` directory, clones the `claude-mem` repository directly, and executes `npm install && npm run build` to compile the background SQLite/Chroma DB worker service. This gives Claude persistent memory instantly.
@@ -93,14 +90,14 @@ cp CLAUDE.md.template /path/to/your/project/CLAUDE.md
 ### Step 2: Run the Agent
 
 **Mode A: The Purist (Uses Anthropic's API)**
-Runs the unlocked binary against standard Claude models.
+Runs the unlocked binary against standard Claude models from any directory.
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-..."
 communist-claude
 ```
 
 **Mode B: God Mode (95% Cheaper)**
-Intercepts the API routing and forces the CLI to use MiniMax M2.7 instead. You get massive context windows and near-Opus performance for pennies.
+Intercepts the API routing and forces the CLI to use MiniMax M2.7 instead.
 ```bash
 export MINIMAX_API_KEY="sk-your-minimax-key-here"
 communist-claude --minimax
