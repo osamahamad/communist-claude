@@ -118,6 +118,8 @@ Based on real-world testing of this setup, here are the most common installation
   The `free-code` fork heavily relies on Bun's bleeding-edge features. If your build fails, it is almost certainly because your Bun version is `< 1.3.11`. Our `install.sh` script automatically runs `bun upgrade` to prevent this.
 * **`claude-mem` installer throwing `/dev/tty: No such device or address`:** 
   The official `claude-mem` installer script uses interactive prompts that crash in CI/CD or headless terminals. We bypassed this by having `install.sh` manually `git clone`, `npm install`, and `npm run build` the plugin directly into your `~/.claude/plugins/marketplaces/` directory.
+* **Running `--dangerously-skip-permissions` as `root` / via `sudo`:**
+  This fork allows it and emits a warning instead of hard-exiting, but it is still dangerous outside a disposable VM/container. Use it only if you understand that every tool action will run with root privileges.
 
 ---
 

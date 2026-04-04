@@ -397,8 +397,8 @@ export async function setup(
     permissionMode === 'bypassPermissions' ||
     allowDangerouslySkipPermissions
   ) {
-    // Check if running as root/sudo on Unix-like systems
-    // Allow root if in a sandbox (e.g., TPU devspaces that require root)
+    // This fork allows root + bypass mode, but keep a loud warning for
+    // non-sandboxed sessions because the upstream guard existed for a reason.
     if (
       process.platform !== 'win32' &&
       typeof process.getuid === 'function' &&
@@ -407,10 +407,9 @@ export async function setup(
       !isEnvTruthy(process.env.CLAUDE_CODE_BUBBLEWRAP)
     ) {
       // biome-ignore lint/suspicious/noConsole:: intentional console output
-      console.error(
-        `--dangerously-skip-permissions cannot be used with root/sudo privileges for security reasons`,
+      console.warn(
+        `Warning: running --dangerously-skip-permissions as root/sudo outside a sandbox. This fork allows it, but it is unsafe unless the environment is disposable.`,
       )
-      process.exit(1)
     }
 
     if (
